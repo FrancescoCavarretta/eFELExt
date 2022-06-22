@@ -4,14 +4,6 @@ import copy
 from .exp2_fit import membrane_time_constant
 
 
-function = { 'clustering_index':clustering_index,
-             'input_resistance':input_resistance,
-             'AP_count':AP_count,
-             'AP_count_after_stim':AP_count_after_stim,
-             'AP_count_before_stim':AP_count_before_stim,
-             'decay_time_constant_after_stim2':decay_time_constant_after_stim2 }
-
-
 def _trace_trim(trace, tpad=200):
   idx = numpy.logical_and(trace['T'] >= (trace['stim_start'][0] - tpad),
                           trace['T'] <= (trace['stim_end'][0] + tpad))
@@ -91,6 +83,12 @@ def decay_time_constant_after_stim2(trace):
 
 
   
+function = { 'clustering_index':clustering_index,
+             'input_resistance':input_resistance,
+             'AP_count':AP_count,
+             'AP_count_after_stim':AP_count_after_stim,
+             'AP_count_before_stim':AP_count_before_stim,
+             'decay_time_constant_after_stim2':decay_time_constant_after_stim2 }
 
   
 
@@ -100,16 +98,26 @@ def getFeatureValues(packed_trace, efeature_name):
   """
   ret_val = {}
   
-  for _efeature_name in efeature_name:
-    
-    _packed_trace = packed_trace      
+  for _efeature_name in efeature_name: 
       
     if _efeature_name in function:
-      val = function[_efeature_name](_packed_trace)
+      val = function[_efeature_name](packed_trace)
     else:
-      val = efel.getFeatureValues([ _packed_trace ], [ _efeature_name ])[0][_efeature_name][0]
+      val = efel.getFeatureValues([ packed_trace ], [ _efeature_name ])[0][_efeature_name]
+
+    # type checking
+    if val is None:
+      val = numpy.nan
+    elif isinstance(val, numpy.ndarray):
+      if val.shape[0] == 0:
+        if 'AP_count' in _efeature_name:
+          val = 0
+        else:
+          val = numpy.nan
+      else:
+        val = val[0]
       
-    if val is None or numpy.isinf(val):
+    if numpy.isinf(val):
       val = numpy.nan
       
     ret_val[_efeature_name] = val

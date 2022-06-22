@@ -1,1 +1,1 @@
-from functions import getFeatureValues
+from .functions import efel, getFeatureValues
