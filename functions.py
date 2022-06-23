@@ -3,9 +3,6 @@ import numpy
 import copy
 from .exp2_fit import membrane_time_constant
 
-_input_resistance_tinit = 500
-_input_resistance_tstop = 600
-
 def _trace_trim(trace, tpad=200):
   idx = numpy.logical_and(trace['T'] >= (trace['stim_start'][0] - tpad),
                           trace['T'] <= (trace['stim_end'][0] + tpad))
@@ -17,6 +14,13 @@ def _trace_trim(trace, tpad=200):
 
 def AP_count(trace):
   trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
   trace = _trace_trim(trace)
   ef = efel.getFeatureValues([trace], ['AP_begin_voltage'])[0]    
   
@@ -29,6 +33,13 @@ def AP_count(trace):
 
 def AP_count_after_stim(trace):
   trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
   trace['stim_start'][0] = trace['stim_end'][0]
   trace['stim_end'][0] = trace['T'][-1]
   trace = _trace_trim(trace, tpad=0)
@@ -37,6 +48,13 @@ def AP_count_after_stim(trace):
 
 def AP_count_before_stim(trace):
   trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
   trace['stim_end'][0] = trace['stim_start'][0]
   trace['stim_start'][0] = trace['T'][0]
   trace = _trace_trim(trace, tpad=0)
@@ -46,6 +64,13 @@ def AP_count_before_stim(trace):
 
 def clustering_index(trace):
   trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
   ef = efel.getFeatureValues([trace], ['all_ISI_values', 'time_to_first_spike'])[0]
   
   try:
@@ -61,11 +86,15 @@ def clustering_index(trace):
 
 def input_resistance(trace, tpad=500):
   trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
   
   baseline = numpy.mean(trace['V'][ trace['T'] < tpad ])
 
-  trace['stim_start'][0] = _input_resistance_tinit
-  trace['stim_end'][0] = _input_resistance_tstop
   trace = _trace_trim(trace, tpad=0)
   Vpeak = trace['V'][-1] - baseline
   retval = (Vpeak * 1e-3) / (-10.0 * 1e-12) * 1e-6
@@ -76,6 +105,13 @@ def input_resistance(trace, tpad=500):
 
 def decay_time_constant_after_stim2(trace):
   trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
   trace['stim_end'][0] = trace['T'][-1]
   trace = _trace_trim(trace, tpad=0)
   return membrane_time_constant(trace['T'],  trace['V']) 
