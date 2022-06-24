@@ -31,6 +31,44 @@ def AP_count(trace):
   return 0
 
 
+def AP1_amp_rev(trace):
+  trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
+  trace = _trace_trim(trace)
+  ef = efel.getFeatureValues([trace], ['AP_begin_voltage', 'AP1_peak'])[0]
+  
+  try:
+    return ef['AP1_peak'][0] - ef['AP_begin_voltage'][0]
+  except:
+    pass
+  return numpy.nan
+
+
+def AP2_amp_rev(trace):
+  trace = copy.deepcopy(trace)
+
+  if hasattr(trace['T'], 'to_numpy'):
+    trace['T'] = trace['T'].to_numpy()
+    
+  if hasattr(trace['V'], 'to_numpy'):
+    trace['V'] = trace['V'].to_numpy()
+    
+  trace = _trace_trim(trace)
+  ef = efel.getFeatureValues([trace], ['AP_begin_voltage', 'AP2_peak'])[0]
+  
+  try:
+    return ef['AP2_peak'][0] - ef['AP_begin_voltage'][1]
+  except:
+    pass
+  return numpy.nan
+
+
 def AP_count_after_stim(trace):
   trace = copy.deepcopy(trace)
 
@@ -127,7 +165,9 @@ function = { 'clustering_index':clustering_index,
              'AP_count':AP_count,
              'AP_count_after_stim':AP_count_after_stim,
              'AP_count_before_stim':AP_count_before_stim,
-             'decay_time_constant_after_stim2':decay_time_constant_after_stim2 }
+             'decay_time_constant_after_stim2':decay_time_constant_after_stim2,
+             'AP1_amp_rev':AP1_amp_rev,
+             'AP2_amp_rev':AP2_amp_rev }
 
   
 
