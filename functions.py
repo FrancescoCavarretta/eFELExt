@@ -179,10 +179,13 @@ def getFeatureValues(packed_trace, efeature_name):
   
   for _efeature_name in efeature_name: 
       
-    if _efeature_name in function:
-      val = function[_efeature_name](packed_trace)
-    else:
-      val = efel.getFeatureValues([ packed_trace ], [ _efeature_name ])[0][_efeature_name]
+    try:
+      if _efeature_name in function:
+        val = function[_efeature_name](packed_trace)
+      else:
+        val = efel.getFeatureValues([ packed_trace ], [ _efeature_name ])[0][_efeature_name]
+    except:
+      val = None
 
     # type checking
     if val is None:
