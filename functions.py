@@ -122,7 +122,7 @@ def clustering_index(trace):
 
 
 
-def input_resistance(trace, tpad=500):
+def input_resistance(trace):
   trace = copy.deepcopy(trace)
 
   if hasattr(trace['T'], 'to_numpy'):
@@ -130,8 +130,8 @@ def input_resistance(trace, tpad=500):
     
   if hasattr(trace['V'], 'to_numpy'):
     trace['V'] = trace['V'].to_numpy()
-  
-  baseline = numpy.mean(trace['V'][ trace['T'] < tpad ])
+    
+  baseline = numpy.mean(trace['V'][ trace['T'] < trace['stim_start'][0] ])
 
   trace = _trace_trim(trace, tpad=0)
   Vpeak = trace['V'][-1] - baseline
