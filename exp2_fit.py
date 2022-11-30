@@ -20,7 +20,7 @@ def membrane_time_constant(xp, yp, dt=0.001):
     y = np.interp(x, xp, yp)
 
     return np.max(
-        1 / curve_fit(func, x, y, bounds=([0,0,0], [1,1,1]))[0][1:]
+        1 / curve_fit(func, x, y, bounds=([0,1e-3,1e-3], [1,1,1]))[0][1:]
     )
 
 
